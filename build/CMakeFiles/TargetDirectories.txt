@@ -1,0 +1,4 @@
+/Users/erik/Code/run_tok/build/CMakeFiles/crud-lib.dir
+/Users/erik/Code/run_tok/build/CMakeFiles/crud-exe.dir
+/Users/erik/Code/run_tok/build/CMakeFiles/edit_cache.dir
+/Users/erik/Code/run_tok/build/CMakeFiles/rebuild_cache.dir
