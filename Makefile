@@ -1,11 +1,11 @@
 CXX = g++
 CXXFLAGS = -Wall -std=c++17
 
-TARGET = main
+TARGET = App 
 
 all: $(TARGET)
 
-$(TARGET): main.cpp
+$(TARGET): App.cpp
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) main.cpp $(LDFLAGS) -o $(TARGET)
 
 clean:

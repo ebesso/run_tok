@@ -1,58 +1,56 @@
-#include "controller/sample.hpp"
-#include "oatpp/network/Server.hpp"
+#include "oatpp/web/server/HttpConnectionHandler.hpp"
 
-#include <iostream>
+#include "oatpp/network/Server.hpp"
+#include "oatpp/network/tcp/server/ConnectionProvider.hpp"
+
+class Handler : public oatpp::web::server::HttpRequestHandler {
+public:
+
+  /**
+   * Handle incoming request and return outgoing response.
+   */
+  std::shared_ptr<OutgoingResponse> handle(const std::shared_ptr<IncomingRequest>& request) override {
+    std::cout << "Hello World!" << std::endl;
+    return ResponseFactory::createResponse(Status::CODE_200, "Hello World!");
+  }
+
+};
 
 void run() {
-  
-  AppComponent components; // Create scope Environment components
-  
-  /* Get router component */
-  OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
 
-  oatpp::web::server::api::Endpoints docEndpoints;
+  /* Create Router for HTTP requests routing */
+  auto router = oatpp::web::server::HttpRouter::createShared();
 
-  docEndpoints.append(router->addController(UserController::createShared())->getEndpoints());
+  router->route("GET", "/hello", std::make_shared<Handler>());
 
-  router->addController(oatpp::swagger::Controller::createShared(docEndpoints));
-  router->addController(StaticController::createShared());
+  /* Create HTTP connection handler with router */
+  auto connectionHandler = oatpp::web::server::HttpConnectionHandler::createShared(router);
 
-  /* Get connection handler component */
-  OATPP_COMPONENT(std::shared_ptr<oatpp::network::ConnectionHandler>, connectionHandler);
+  /* Create TCP connection provider */
+  auto connectionProvider = oatpp::network::tcp::server::ConnectionProvider::createShared({"localhost", 8000, oatpp::network::Address::IP_4});
 
-  /* Get connection provider component */
-  OATPP_COMPONENT(std::shared_ptr<oatpp::network::ServerConnectionProvider>, connectionProvider);
+  /* Create server which takes provided TCP connections and passes them to HTTP connection handler */
+  oatpp::network::Server server(connectionProvider, connectionHandler);
 
-  /* create server */
-  oatpp::network::Server server(connectionProvider,
-                                connectionHandler);
-  
-  OATPP_LOGd("Server", "Running on port {}...", connectionProvider->getProperty("port").toString())
-  
+  /* Print info about server port */
+  // OATPP_LOGI("MyApp", "Server running on port %s", connectionProvider->getProperty("port").getData());
+
+
+  /* Run server */
   server.run();
-
-  /* stop db connection pool */
-  OATPP_COMPONENT(std::shared_ptr<oatpp::provider::Provider<oatpp::sqlite::Connection>>, dbConnectionProvider);
-  dbConnectionProvider->stop();
-  
 }
 
-/**
- *  main
- */
-int main(int argc, const char * argv[]) {
+int main() {
 
+  /* Init oatpp Environment */
   oatpp::Environment::init();
 
+  /* Run App */
   run();
-  
-  /* Print how many objects were created during app running, and what have left-probably leaked */
-  /* Disable object counting for release builds using '-D OATPP_DISABLE_ENV_OBJECT_COUNTERS' flag for better performance */
-  std::cout << "\nEnvironment:\n";
-  std::cout << "objectsCount = " << oatpp::Environment::getObjectsCount() << "\n";
-  std::cout << "objectsCreated = " << oatpp::Environment::getObjectsCreated() << "\n\n";
-  
+
+  /* Destroy oatpp Environment */
   oatpp::Environment::destroy();
-  
+
   return 0;
+
 }
