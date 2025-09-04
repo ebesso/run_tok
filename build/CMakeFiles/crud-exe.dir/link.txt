@@ -1,1 +1,0 @@
-/usr/bin/c++  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names -L/opt/homebrew/opt/drogon/lib -L/opt/homebrew/opt/jsoncpp/lib "CMakeFiles/crud-exe.dir/src/App.cpp.o" -o crud-exe  libcrud-lib.a /usr/local/lib/oatpp-1.4.0/liboatpp.a
