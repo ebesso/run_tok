@@ -1,3 +1,5 @@
 .vscode
 build/**
 src/cache/*
+sweden-250904.osm.pbf
+src/__pycache__
